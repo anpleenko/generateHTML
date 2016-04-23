@@ -1,24 +1,23 @@
 {
-  "name": "Vaeum_bookmark",
+  "name": "generateHTML",
   "version": "0.0.1",
-  "description": "Bookmark project",
+  "description": "generateHTML",
   "main": "index.js",
   "scripts": {
-    "prebuild": "rm -rf app && rm -rf assets/bower && bower install",
+    "prebuild": "rm -rf app",
     "build": "gulp build",
-    "start": "gulp",
-    "deploy": "gulp deploy"
+    "start": "gulp"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://vaeum@github.com/vaeum/bookmark.git"
+    "url": "git+https://vaeum@github.com/vaeum/generateHTML.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/vaeum/bookmark/issues"
+    "url": "https://github.com/vaeum/generateHTML/issues"
   },
-  "homepage": "http://vaeum.github.io/bookmark",
+  "homepage": "http://vaeum.github.io/generateHTML",
   "devDependencies": {
     "autoprefixer": "^6.3.5",
     "babel-core": "^6.7.6",

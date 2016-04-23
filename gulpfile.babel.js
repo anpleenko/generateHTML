@@ -94,9 +94,9 @@ gulp.task('scss', () => {
         .pipe(reload({stream: true}))
 })
 
-gulp.task('build', () =>{runSequence('scss', 'jade')})
+gulp.task('build', () =>{runSequence('browserSync', 'scss', 'jade')})
 
-gulp.task('default', ['browserSync', 'build'], () => {
+gulp.task('default', ['build'], () => {
     $.watch(env.watch.scss, () => gulp.start('scss'));
     $.watch(env.watch.jade, () => gulp.start('jade'));
 })
