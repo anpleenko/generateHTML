@@ -32,9 +32,9 @@ const env = {
     },
     dest: {
         jade: './app',
-        scss: './app',
-        less: './app',
-        styl: './app',
+        scss: './app/css',
+        less: './app/css',
+        styl: './app/css',
         html2jade: './html2jade',
     },
     watch: {
