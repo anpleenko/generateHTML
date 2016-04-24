@@ -41,3 +41,5 @@ npm-debug.log
 *.cache
 
 .publish/
+
+html2jade/index.jade
