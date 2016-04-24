@@ -22,6 +22,9 @@ indent_size = 2
 [*.less]
 indent_size = 2
 
+[*.styl]
+indent_size = 2
+
 [*.jade]
 indent_size = 2
 

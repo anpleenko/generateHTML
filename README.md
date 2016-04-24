@@ -1,13 +1,13 @@
-# Vaeum.bookmarks
+# Vaeum.generateHTML
 
-[![Build Status](https://travis-ci.org/vaeum/bookmarks.svg?branch=master)](https://travis-ci.org/vaeum/bookmarks)
+Projet for fast create HTML and css file
 
 commands for init project
 
 ```
-git clone git@github.com:vaeum/bookmarks.git vaeum.bookmarks
-cd vaeum.bookmarks
-npm install && bower install && npm run build
+git clone git@github.com:vaeum/generateHTML.git vaeum.generateHTML
+cd vaeum.generateHTML
+npm install && npm run build
 ```
 
 Edit Json file 

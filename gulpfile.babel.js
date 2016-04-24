@@ -9,6 +9,15 @@
 
 'use strict';
 
+import gulp            from 'gulp';
+import runSequence     from 'run-sequence';
+import fs              from 'fs';
+import perfectionist   from 'perfectionist';
+import mqpacker        from "css-mqpacker";
+import autoprefixer    from 'autoprefixer';
+import browserSync     from 'browser-sync';
+import gulpLoadPlugins from 'gulp-load-plugins';
+
 const env = {
     argv: require('yargs').argv,
     bemPrefix: {elemPrefix: '__', modPrefix: '_', modDlmtr: '--'},
@@ -16,7 +25,9 @@ const env = {
     src: {
         jade: ['./assets/pages/!(_)*.jade'],
         json: './assets/data/data.json',
-        scss: ['assets/styles/**/style.scss']
+        scss: ['assets/scss/**/style.scss'],
+        less: ['assets/less/**/style.less'],
+        styl: ['assets/styl/**/style.styl']
     },
     watch: {
         jade: [
@@ -25,52 +36,21 @@ const env = {
             'assets/components/**/*.jade',
             'assets/mixins/**/*.jade'
         ],
-        scss: [
-            'assets/components/**/*.scss',
-            'assets/styles/**/*.scss'
-        ]
+        scss: ['assets/scss/**/style.scss'],
+        less: ['assets/less/**/style.less'],
+        styl: ['assets/styl/**/style.styl']
     },
     browserSync: {
         server: {baseDir: "./app/"},
         open: false
-    }
+    },
+    PROCESSORS: [
+        autoprefixer({ browsers: ['last 2 versions', '> 1%'] }),
+        mqpacker
+    ]
 }
-
-import gulp            from 'gulp';
-import del             from 'del';
-import mainBowerFiles  from 'main-bower-files';
-import runSequence     from 'run-sequence';
-import fs              from 'fs';
-import perfectionist   from 'perfectionist';
-import pxtorem         from 'postcss-pxtorem';
-import selector        from 'postcss-custom-selectors';
-import focusHover      from 'postcss-focus-hover';
-import mqpacker        from "css-mqpacker";
-import autoprefixer    from 'autoprefixer';
-import browserSync     from 'browser-sync';
-import gulpLoadPlugins from 'gulp-load-plugins';
 
 let $ = gulpLoadPlugins({});
-
-let PROCESSORS = [
-    pxtorem({
-        root_value: 14,
-        selector_black_list: ['html']
-    }),
-    autoprefixer({ browsers: ['last 2 versions', '> 1%'] }),
-    mqpacker,
-    selector,
-    focusHover
-]
-
-let BOWER_MAIN_FILES_CONFIG = {
-    includeDev: true,
-    paths:{
-        bowerDirectory: './assets/bower',
-        bowerJson: './bower.json'
-    }
-}
-
 let reload = browserSync.reload;
 
 gulp.task('browserSync', () => {browserSync(env.browserSync)})
@@ -94,9 +74,28 @@ gulp.task('jade', () => {
 
 gulp.task('scss', () => {
     return gulp.src(env.src.scss)
-        .pipe($.sassGlobImport())
         .pipe($.sass().on('error', $.notify.onError()))
-        .pipe($.postcss(PROCESSORS))
+        .pipe($.postcss(env.PROCESSORS))
+        .pipe($.csso())
+        .pipe($.postcss([perfectionist({})]))
+        .pipe(gulp.dest('./app/css'))
+        .pipe(reload({stream: true}))
+})
+
+gulp.task('less', () => {
+    return gulp.src(env.src.less)
+        .pipe($.less().on('error', $.notify.onError()))
+        .pipe($.postcss(env.PROCESSORS))
+        .pipe($.csso())
+        .pipe($.postcss([perfectionist({})]))
+        .pipe(gulp.dest('./app/css'))
+        .pipe(reload({stream: true}))
+})
+
+gulp.task('styl', () => {
+    return gulp.src(env.src.styl)
+        .pipe($.stylus().on('error', $.notify.onError()))
+        .pipe($.postcss(env.PROCESSORS))
         .pipe($.csso())
         .pipe($.postcss([perfectionist({})]))
         .pipe(gulp.dest('./app/css'))
@@ -108,4 +107,6 @@ gulp.task('build', () =>{runSequence('browserSync', 'scss', 'jade')})
 gulp.task('default', ['build'], () => {
     $.watch(env.watch.scss, () => gulp.start('scss'));
     $.watch(env.watch.jade, () => gulp.start('jade'));
+    $.watch(env.watch.less, () => gulp.start('less'));
+    $.watch(env.watch.styl, () => gulp.start('styl'));
 })
