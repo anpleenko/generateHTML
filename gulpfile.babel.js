@@ -27,7 +27,15 @@ const env = {
         json: './assets/data/data.json',
         scss: ['assets/scss/**/style.scss'],
         less: ['assets/less/**/style.less'],
-        styl: ['assets/styl/**/style.styl']
+        styl: ['assets/styl/**/style.styl'],
+        html2jade: ['html2jade/**/*.html']
+    },
+    dest: {
+        jade: './app',
+        scss: './app',
+        less: './app',
+        styl: './app',
+        html2jade: './html2jade',
     },
     watch: {
         jade: [
@@ -38,7 +46,8 @@ const env = {
         ],
         scss: ['assets/scss/**/style.scss'],
         less: ['assets/less/**/style.less'],
-        styl: ['assets/styl/**/style.styl']
+        styl: ['assets/styl/**/style.styl'],
+        html2jade: ['html2jade/**/*.html']
     },
     browserSync: {
         server: {baseDir: "./app/"},
@@ -47,7 +56,10 @@ const env = {
     PROCESSORS: [
         autoprefixer({ browsers: ['last 2 versions', '> 1%'] }),
         mqpacker
-    ]
+    ],
+    sequence:{
+        build: ['browserSync', 'scss', 'jade', 'html2jade']
+    }
 }
 
 let $ = gulpLoadPlugins({});
@@ -68,7 +80,15 @@ gulp.task('jade', () => {
         .pipe($.prettify({indent_size: 4}))
         .pipe($.replace(/&nbsp;/g, ' '))
         .pipe($.check('elem="')).on('error', $.notify.onError())
-        .pipe(gulp.dest('./app/'))
+        .pipe(gulp.dest(env.dest.jade))
+        .on('end', browserSync.reload)
+})
+
+gulp.task('html2jade', () => {
+    return gulp.src(env.src.html2jade)
+        .pipe($.html2jade({nspaces:2}))
+        .on('error', $.notify.onError())
+        .pipe(gulp.dest(env.dest.html2jade))
         .on('end', browserSync.reload)
 })
 
@@ -78,7 +98,7 @@ gulp.task('scss', () => {
         .pipe($.postcss(env.PROCESSORS))
         .pipe($.csso())
         .pipe($.postcss([perfectionist({})]))
-        .pipe(gulp.dest('./app/css'))
+        .pipe(gulp.dest(env.dest.scss))
         .pipe(reload({stream: true}))
 })
 
@@ -88,7 +108,7 @@ gulp.task('less', () => {
         .pipe($.postcss(env.PROCESSORS))
         .pipe($.csso())
         .pipe($.postcss([perfectionist({})]))
-        .pipe(gulp.dest('./app/css'))
+        .pipe(gulp.dest(env.dest.less))
         .pipe(reload({stream: true}))
 })
 
@@ -98,15 +118,16 @@ gulp.task('styl', () => {
         .pipe($.postcss(env.PROCESSORS))
         .pipe($.csso())
         .pipe($.postcss([perfectionist({})]))
-        .pipe(gulp.dest('./app/css'))
+        .pipe(gulp.dest(env.dest.styl))
         .pipe(reload({stream: true}))
 })
 
-gulp.task('build', () =>{runSequence('browserSync', 'scss', 'jade')})
+gulp.task('build', () =>{runSequence(env.sequence.build)})
 
 gulp.task('default', ['build'], () => {
     $.watch(env.watch.scss, () => gulp.start('scss'));
     $.watch(env.watch.jade, () => gulp.start('jade'));
     $.watch(env.watch.less, () => gulp.start('less'));
     $.watch(env.watch.styl, () => gulp.start('styl'));
+    $.watch(env.watch.html2jade, () => gulp.start('html2jade'));
 })
